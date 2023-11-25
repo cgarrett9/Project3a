@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stock Data Visualization</title>
+</head>
+<body>
+    <h1>Stock Data Visualization</h1>
+    <form action="/generate_graph" method="post">
+        <label for="symbol">Stock Symbol:</label>
+        <select id="symbol" name="symbol" required></select><br><br>
+
+        <label for="chart_type">Chart Type:</label>
+        <select id="chart_type" name="chart_type">
+            <option value="line">1- Line Chart</option>
+            <option value="bar">2- Bar Chart</option>
+        </select><br><br>
+
+        <label for="time_series">Time Series:</label>
+        <select id="time_series" name="time_series">
+            <option value="TIME_SERIES_INTRADAY">1- Intraday</option>
+            <option value="TIME_SERIES_DAILY">2- Daily</option>
+            <option value="TIME_SERIES_WEEKLY">3- Weekly</option>
+            <option value="TIME_SERIES_MONTHLY">4- Monthly</option>
+        </select><br><br>
+
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" required><br><br>
+
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" required><br><br>
+
+        <input type="submit" value="Generate Graph"><br><br>
+    </form>
+
+    <script>
+        function loadStockSymbols() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var csvData = xhr.responseText;
+                        var rows = csvData.split('\n');
+                        
+                        var stockSymbolDropdown = document.getElementById('symbol');
+                        for (var i = 0; i < rows.length; i++) {
+                            var stockInfo = rows[i].split(',');
+                            var newOption = document.createElement('option');
+                            newOption.value = stockInfo[0].trim();
+                            newOption.text = stockInfo[1].trim();
+                            stockSymbolDropdown.add(newOption);
+                        }
+                    } else {
+                        console.error('Failed to load stocks.csv file');
+                    }
+                }
+            };
+
+            xhr.open('GET', 'stocks.csv', true);
+            xhr.send();
+        }
+
+        loadStockSymbols();
+    </script>
+</body>
+</html>
+
